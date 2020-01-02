@@ -1,4 +1,4 @@
-package matchmaker
+package ridematch
 
 type coord struct {
 	lat float64

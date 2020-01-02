@@ -1,29 +1,9 @@
-package matchmaker
+// Copyright (c) 2019 Cascade October LLC.
 
-import (
-	"context"
-	"log"
-	"time"
+// Module gridunlock provides packages that can query Firebase for unmatched
+// riders and drivers for GridUnlock.
+package gridunlock
 
-	firebase "firebase.google.com/go"
-	"firebase.google.com/go/db"
-
-	"./const"
-
-	"github.com/umahmood/haversine"
-)
-
-var client *db.Client
-
-func init() {
-	context := context.Background()
-	config := &firebase.Config{DatabaseURL: firebaseURL}
-	app, error := firebase.NewApp(context, conf)
-	if error != nil {
-		log.Fatalf("firebase.NewApp: %v", error)
-	}
-	client, error = app.Database(context)
-	if error != nil {
-		log.Fatalf("app.Firestore: %v", error)
-	}
+func Config() string {
+  return "gridunlock config"
 }
