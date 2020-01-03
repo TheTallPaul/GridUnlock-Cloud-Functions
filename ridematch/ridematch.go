@@ -5,7 +5,6 @@
 package ridematch
 
 import (
-	"gonum.org/v1/gonum/stat/distuv"
 	"pault.ag/go/haversine"
 )
 
@@ -31,93 +30,92 @@ type riderDriverMatch struct {
 
 // matchmake makes calls for the unassigned riders and drivers, then passes them
 // to other functions to make
-func Matchmake(context context.Context, event FirestoreEvent) error {
-	riderRoutes := getUnassignedRiderRoutes()
-	driverRoutes := getUnfullDriverRoutes()
+// func Matchmake(context context.Context, event FirestoreEvent) error {
+// 	riderRoutes := getUnassignedRiderRoutes()
+// 	driverRoutes := getUnfullDriverRoutes()
 
-	assignedRoutes := matchRidersDrivers(riderRoutes, driverRoutes, 3)
-	updateFirebase(assignedRoutes)
-}
+// 	assignedRoutes := matchRidersDrivers(riderRoutes, driverRoutes, 3)
+// 	updateFirebase(assignedRoutes)
+// }
 
 // matchRidersDrivers finds the shortest distances from a driver route to each
 // rider and then weighted randomizes the findings to return a list of matches
-func matchRidersDrivers(riderRoutes, driverRoutes,
-	timesToRepeat int) []driverRoute {
-	var potentialPickups possiblePickups[]
+// func matchRidersDrivers(riderRoutes, driverRoutes,
+// 	timesToRepeat int) []driverRoute {
+// 	var potentialPickups []possiblePickups
 
-	for _, driverRoute := driverRoutes {
-		potentialPickups = append(
-			potentialPickups,
-			riderDriverClosestDistances(driverRoute, riderRoutes),
-		)
-	}
+// 	for _, driverRoute := driverRoutes {
+// 		potentialPickups = append(
+// 			potentialPickups,
+// 			riderDriverClosestDistances(driverRoute, riderRoutes),
+// 		)
+// 	}
 
-	return randomMatch(potentialPickups)
+// 	return randomMatch(potentialPickups)
 
-}
+// }
 
 // riderDriverClosestDistances finds the closest Haversine distance to a node on
 // a drivers route to a rider
-func riderDriverClosestDistances(driverRoute driverRoute,
-	riderRoutes) float64 {
+// func riderDriverClosestDistances(driverRoute driverRoute,
+// 	riderRoutes) float64 {
 
 
-}
+// }
 
 // haversineDistance finds the Haversine distance in meters between two coords
 func haversineDistance(coordA, coordB coord) float64 {
-	pointA = haversine.Point{Lat: coordA.lat, Lon: coordA.lon}
-	pointB = haversine.Point{Lat: coordB.lat, Lon: coordB.lon}
+	var pointA = haversine.Point{Lat: coordA.lat, Lon: coordA.lng}
+	var pointB = haversine.Point{Lat: coordB.lat, Lon: coordB.lng}
 
 	return float64(pointA.MetresTo(pointB))
 }
 
 // randomMatch performs a weighted random match selection, where closer
 // distances are weighted heavier than further distances
-func randomMatch(potentialPickups []possiblePickups) []riderDriverMatch {
-	var matchedDrivers string[]
-	var matchedRiders string[]
-	var matches riderDriverMatch[]
+// func randomMatch(potentialPickups []possiblePickups) []riderDriverMatch {
+// 	var matchedDrivers []string
+// 	var matchedRiders []string
+// 	var matches []riderDriverMatch
 
-	for _, pickup := potentialPickups {
+// 	for _, pickup := range potentialPickups {
 
+// 	}
 
-	}
+// 	return 0
+// }
 
-
-}
 
 // weightedInverseRandRider creates a random inverse set and selects one
 func weightedInverseRandRider(pickupSet possiblePickups) riderDriverMatch {
-	var weightedDistance = inverseArray(
-		convertPickupsToArray(distances []riderDistance)
-	)
-	var driverIndex;
+	// var weightedDistance = inverseSlice(
+	// 	convertPickupsToArray(pickupSet.networkRiderDistances))
+	var driverIndex = 1
 
 	return riderDriverMatch{
 		pickupSet.riderID,
-		pickupSet.networkRiderDistances[driverIndex].
+		pickupSet.networkRiderDistances[driverIndex].driverID,
 	}
 }
 
-// inverseArray inverses each element of an array
-func inverseArray(array float64[]) float64[] {
-	var inverseArray [len(array)]float64
+// inverseSlice inverses each element of an slice
+func inverseSlice(slice []float64) []float64 {
+	var inverseSlice []float64
 
 	// Invert each element
-	for index, element := array {
-		inverseArray[index] = 1.0 / element
+	for _, element := range slice {
+		inverseSlice = append(inverseSlice, 1.0 / element)
 	}
 
-	return inverseArray
+	return inverseSlice
 }
 
 
 // convertPickupsToArray converts the networkRiderDistances slice in a
 // possiblePickups into a weighted indexed array
-func convertPickupsToArray(distances []riderDistance) float64[] {
-	var allDistances [len(distances)]float64
-	for i, riderDistance := distances {
+func convertPickupsToArray(distances []riderDistance) []float64 {
+	var allDistances []float64
+	for i, riderDistance := range distances {
 		allDistances[i] = riderDistance.distance
 	}
 
