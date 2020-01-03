@@ -3,12 +3,11 @@ package firebaserepo
 import (
 	"context"
 	"log"
-	"time"
+	// "time"
 
 	firebase "firebase.google.com/go"
 	"firebase.google.com/go/db"
 
-	"./const"
 )
 
 var client *db.Client
@@ -16,7 +15,7 @@ var client *db.Client
 func init() {
 	context := context.Background()
 	config := &firebase.Config{DatabaseURL: firebaseURL}
-	app, error := firebase.NewApp(context, conf)
+	app, error := firebase.NewApp(context, config)
 	if error != nil {
 		log.Fatalf("firebase.NewApp: %v", error)
 	}
