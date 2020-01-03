@@ -6,6 +6,8 @@ package ridematch
 
 import (
 	"pault.ag/go/haversine"
+	"math/rand"
+	// "time"
 )
 
 // A riderDistance is the distance from a rider to a driver's node point
@@ -86,15 +88,32 @@ func haversineDistance(coordA, coordB coord) float64 {
 // }
 
 
-// weightedInverseRandRider creates a random inverse set and selects one
-func weightedInverseRandRider(pickupSet possiblePickups) riderDriverMatch {
-	// var weightedDistance = inverseSlice(
-	// 	convertPickupsToArray(pickupSet.networkRiderDistances))
-	var driverIndex = 1
+// weightedInverseRandRider creates a random inverse set and selects one rider /
+// driver pairing
+func weightedInverseRandRider(pickupSet possiblePickups,
+	randSeed int64) riderDriverMatch {
+	weightedDistance := inverseSlice(
+		convertPickupsToSlice(pickupSet.networkRiderDistances))
+	distancesTotal := sumSlice(weightedDistance)
+	totalWeight := 0.0
+	winnerIndex := len(weightedDistance) - 1
+
+	rand.Seed(randSeed)
+	targetWeight := rand.Float64() * distancesTotal
+
+	// Adds each distance until the random target is reached (weighted
+	// random selection)
+	for index, weight := range weightedDistance {
+		totalWeight += weight
+		if (totalWeight >= targetWeight) {
+			winnerIndex = index
+			break
+		}
+	}
 
 	return riderDriverMatch{
 		pickupSet.riderID,
-		pickupSet.networkRiderDistances[driverIndex].driverID,
+		pickupSet.networkRiderDistances[winnerIndex].driverID,
 	}
 }
 
@@ -104,19 +123,30 @@ func inverseSlice(slice []float64) []float64 {
 
 	// Invert each element
 	for _, element := range slice {
-		inverseSlice = append(inverseSlice, 1.0 / element)
+		inverseSlice = append(inverseSlice, 1 / element)
 	}
 
 	return inverseSlice
 }
 
+// sumSlice returns the sum of a slice
+func sumSlice(slice []float64) float64 {
+	total := 0.0
 
-// convertPickupsToArray converts the networkRiderDistances slice in a
-// possiblePickups into a weighted indexed array
-func convertPickupsToArray(distances []riderDistance) []float64 {
+	for _, x := range slice {
+		total += x
+	}
+
+	return total
+}
+
+
+// convertPickupsToSlice converts the networkRiderDistances slice in a
+// possiblePickups into a weighted slice
+func convertPickupsToSlice(distances []riderDistance) []float64 {
 	var allDistances []float64
-	for i, riderDistance := range distances {
-		allDistances[i] = riderDistance.distance
+	for _, riderDistance := range distances {
+		allDistances = append(allDistances, riderDistance.distance)
 	}
 
 	return allDistances
