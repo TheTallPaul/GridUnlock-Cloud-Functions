@@ -7,30 +7,18 @@ package ridematch
 import (
 	"pault.ag/go/haversine"
 	"math/rand"
+	"math"
 	// "time"
 )
-
-// A riderDistance is the distance from a rider to a driver's node point
-type riderDistance struct {
-	driverID string
-	distance float64
-}
-
 
 // A possiblePickups is a list of all of the potential drivers that can pick a
 // rider up
 type possiblePickups struct {
-	riderID string
-	networkRiderDistances []riderDistance
+	riderID               string
+	networkRiderDistances map[string]float64
 }
 
-// A riderDriverMatch is a pairing of a driver and a rider
-type riderDriverMatch struct {
-	riderID string
-	driverID string
-}
-
-// matchmake makes calls for the unassigned riders and drivers, then passes them
+// Matchmake makes calls for the unassigned riders and drivers, then passes them
 // to other functions to make
 // func Matchmake(context context.Context, event FirestoreEvent) error {
 // 	riderRoutes := getUnassignedRiderRoutes()
@@ -42,112 +30,124 @@ type riderDriverMatch struct {
 
 // matchRidersDrivers finds the shortest distances from a driver route to each
 // rider and then weighted randomizes the findings to return a list of matches
-// func matchRidersDrivers(riderRoutes, driverRoutes,
-// 	timesToRepeat int) []driverRoute {
-// 	var potentialPickups []possiblePickups
+func matchRidersDrivers(riderPoints []riderStartEnd, driverPaths []driverRoute,
+	timesToRepeat int, randSeed int64) map[string]string {
+	var potentialPickups []possiblePickups
 
-// 	for _, driverRoute := driverRoutes {
-// 		potentialPickups = append(
-// 			potentialPickups,
-// 			riderDriverClosestDistances(driverRoute, riderRoutes),
-// 		)
-// 	}
+	for _, riderCoord := range riderPoints {
+		riderPickups := possiblePickups {
+			riderID: riderCoord.riderID,
+			networkRiderDistances: map[string]float64{},
+		}
+		for _, driverPath := range driverPaths {
+			distance, correctOrder := riderDriverClosestDistances(
+				driverPath, riderCoord)
+			if correctOrder {
+				riderPickups.networkRiderDistances[
+					driverPath.driverID] = distance
+			}
+		}
+		potentialPickups = append(potentialPickups, riderPickups)
+	}
 
-// 	return randomMatch(potentialPickups)
-
-// }
-
-// riderDriverClosestDistances finds the closest Haversine distance to a node on
-// a drivers route to a rider
-// func riderDriverClosestDistances(driverRoute driverRoute,
-// 	riderRoutes) float64 {
-
-
-// }
-
-// haversineDistance finds the Haversine distance in meters between two coords
-func haversineDistance(coordA, coordB coord) float64 {
-	var pointA = haversine.Point{Lat: coordA.lat, Lon: coordA.lng}
-	var pointB = haversine.Point{Lat: coordB.lat, Lon: coordB.lng}
-
-	return float64(pointA.MetresTo(pointB))
+	return randomMatch(potentialPickups, randSeed)
 }
 
-// randomMatch performs a weighted random match selection, where closer
-// distances are weighted heavier than further distances
-// func randomMatch(potentialPickups []possiblePickups) []riderDriverMatch {
-// 	var matchedDrivers []string
-// 	var matchedRiders []string
-// 	var matches []riderDriverMatch
+// riderDriverClosestDistances finds the total closest Haversine distance to a
+// node on a drivers route to a rider's starting point and endpoints. Also
+// checks whether the directions for both participants match (ex. driver is
+// going from SF to LA, but rider is going from LA to SF)
+func riderDriverClosestDistances(driverPath driverRoute,
+	riderCoords riderStartEnd) (float64, bool) {
+	shortestStartDistance, shortestEndDistance := math.MaxFloat64,
+		math.MaxFloat64
+	startIndex, endIndex := -1, -1
 
-// 	for _, pickup := range potentialPickups {
+	for index, driverNode := range driverPath.route {
+		startDistance := haversineDistance(
+			riderCoords.start, driverNode)
+		endDistance   := haversineDistance(riderCoords.end, driverNode)
 
-// 	}
+		if startDistance < shortestStartDistance {
+			shortestStartDistance = startDistance
+			startIndex = index
+		}
+		if endDistance < shortestEndDistance {
+			shortestEndDistance = endDistance
+			endIndex = index
+		}
+	}
 
-// 	return 0
-// }
+	// Check to make sure that the rider's destination doesn't come before
+	// the start point
+	correctOrder := true
+	if startIndex > endIndex {
+		correctOrder = false
+	}
+
+	return shortestStartDistance + shortestEndDistance, correctOrder
+}
+
+// haversineDistance finds the rounded Haversine distance in meters between two
+// coords
+func haversineDistance(coordA, coordB coord) float64 {
+	pointA := haversine.Point{Lat: coordA.lat, Lon: coordA.lng}
+	pointB := haversine.Point{Lat: coordB.lat, Lon: coordB.lng}
+
+	return math.Round(float64(pointA.MetresTo(pointB)))
+}
+
+// randomMatch performs a weighted random match selection on all riders, where
+// closer distances are weighted heavier than further distances and returns it
+// as a map of "DriverID": "RiderID"
+func randomMatch(potentialPickups []possiblePickups,
+	randSeed int64) map[string]string {
+	matches := make(map[string]string)
+
+	for _, pickup := range potentialPickups {
+		driverID, matched := weightedInverseRandRider(
+			pickup, matches, randSeed)
+		if matched {
+			matches[driverID] = pickup.riderID
+		}
+	}
+
+	return matches
+}
 
 
-// weightedInverseRandRider creates a random inverse set and selects one rider /
-// driver pairing
+// weightedInverseRandRider matches a rider to one of their possible drivers
+// using inverse random weighting and returns the matching driver ID
 func weightedInverseRandRider(pickupSet possiblePickups,
-	randSeed int64) riderDriverMatch {
-	weightedDistance := inverseSlice(
-		convertPickupsToSlice(pickupSet.networkRiderDistances))
-	distancesTotal := sumSlice(weightedDistance)
-	totalWeight := 0.0
-	winnerIndex := len(weightedDistance) - 1
-
+	alreadyMatched map[string]string, randSeed int64) (string, bool) {
+	inverseDistanceTotal, totalNum := 0.0, 0.0
+	matchedDriverID                := ""
 	rand.Seed(randSeed)
-	targetWeight := rand.Float64() * distancesTotal
+
+	for driverID, distance := range pickupSet.networkRiderDistances {
+		if _, matched := alreadyMatched[driverID]; !matched {
+			inverseDistanceTotal += 1 / distance
+		} else {
+			// Clean up previous matches
+			delete(pickupSet.networkRiderDistances, driverID)
+		}
+	}
+
+	targetNum := rand.Float64() * inverseDistanceTotal
 
 	// Adds each distance until the random target is reached (weighted
 	// random selection)
-	for index, weight := range weightedDistance {
-		totalWeight += weight
-		if (totalWeight >= targetWeight) {
-			winnerIndex = index
+	for driverID, distance := range pickupSet.networkRiderDistances {
+		totalNum += 1 / distance
+		if (totalNum >= targetNum) {
+			matchedDriverID = driverID
 			break
 		}
 	}
 
-	return riderDriverMatch{
-		pickupSet.riderID,
-		pickupSet.networkRiderDistances[winnerIndex].driverID,
-	}
-}
-
-// inverseSlice inverses each element of an slice
-func inverseSlice(slice []float64) []float64 {
-	var inverseSlice []float64
-
-	// Invert each element
-	for _, element := range slice {
-		inverseSlice = append(inverseSlice, 1 / element)
+	if len(matchedDriverID) > 0 {
+		return matchedDriverID, true
 	}
 
-	return inverseSlice
-}
-
-// sumSlice returns the sum of a slice
-func sumSlice(slice []float64) float64 {
-	total := 0.0
-
-	for _, x := range slice {
-		total += x
-	}
-
-	return total
-}
-
-
-// convertPickupsToSlice converts the networkRiderDistances slice in a
-// possiblePickups into a weighted slice
-func convertPickupsToSlice(distances []riderDistance) []float64 {
-	var allDistances []float64
-	for _, riderDistance := range distances {
-		allDistances = append(allDistances, riderDistance.distance)
-	}
-
-	return allDistances
+	return matchedDriverID, false
 }

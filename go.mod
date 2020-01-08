@@ -17,6 +17,7 @@ require (
 	golang.org/x/lint v0.0.0-20191125180803-fdd1cda4f05f // indirect
 	golang.org/x/oauth2 v0.0.0-20191202225959-858c2ad4c8b6 // indirect
 	golang.org/x/tools v0.0.0-20191211230051-ec14b2965194 // indirect
+	golang.org/x/tour v0.0.0-20200106162511-2bf82070c397 // indirect
 	gonum.org/v1/gonum v0.6.2
 	google.golang.org/appengine v1.6.5 // indirect
 	googlemaps.github.io/maps v0.0.0-20191014172202-ce2e58e026c5
