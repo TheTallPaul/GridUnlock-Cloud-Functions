@@ -4,6 +4,14 @@
 // riders and drivers for GridUnlock.
 package gridunlock
 
+import (
+	"GridUnlock-Cloud-Functions.internal/firebaserepo"
+)
+
 func Config() string {
   return "gridunlock config"
+}
+
+func main() {
+	FetchRides()
 }

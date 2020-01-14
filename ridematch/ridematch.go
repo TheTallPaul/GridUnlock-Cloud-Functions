@@ -8,7 +8,6 @@ import (
 	"pault.ag/go/haversine"
 	"math/rand"
 	"math"
-	// "time"
 )
 
 // A possiblePickups is a list of all of the potential drivers that can pick a
@@ -18,19 +17,9 @@ type possiblePickups struct {
 	networkRiderDistances map[string]float64
 }
 
-// Matchmake makes calls for the unassigned riders and drivers, then passes them
-// to other functions to make
-// func Matchmake(context context.Context, event FirestoreEvent) error {
-// 	riderRoutes := getUnassignedRiderRoutes()
-// 	driverRoutes := getUnfullDriverRoutes()
-
-// 	assignedRoutes := matchRidersDrivers(riderRoutes, driverRoutes, 3)
-// 	updateFirebase(assignedRoutes)
-// }
-
 // matchRidersDrivers finds the shortest distances from a driver route to each
 // rider and then weighted randomizes the findings to return a list of matches
-func matchRidersDrivers(riderPoints []riderStartEnd, driverPaths []driverRoute,
+func MatchRidersDrivers(riderPoints []riderStartEnd, driverPaths []driverRoute,
 	timesToRepeat int, randSeed int64) map[string]string {
 	var potentialPickups []possiblePickups
 

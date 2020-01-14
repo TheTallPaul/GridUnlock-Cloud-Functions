@@ -5,7 +5,7 @@ import (
 	"reflect"
 )
 
-var matchRidersDriversTestCases = []struct {
+var MatchRidersDriversTestCases = []struct {
 	riderPoints     []riderStartEnd
 	driverPaths     []driverRoute
 	timesToRepeat   int
@@ -296,8 +296,8 @@ var matchRidersDriversTestCases = []struct {
 }
 
 func TestMatchRidersDrivers(t *testing.T) {
-	for _, input := range matchRidersDriversTestCases {
-		matches := matchRidersDrivers(
+	for _, input := range MatchRidersDriversTestCases {
+		matches := MatchRidersDrivers(
 			input.riderPoints,
 			input.driverPaths,
 			input.timesToRepeat,
