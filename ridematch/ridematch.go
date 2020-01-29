@@ -1,13 +1,17 @@
 // Copyright (c) 2019 Cascade October LLC.
 
-// Package ridematch provides functions that take lists of driver routes and
+// Package ridematch provides functions that take lists of driver Routes and
 // rider destinations
 package ridematch
 
 import (
-	"pault.ag/go/haversine"
-	"math/rand"
 	"math"
+	"math/rand"
+
+	"googlemaps.github.io/maps"
+	"pault.ag/go/haversine"
+
+	"gridunlockridematch/internal/firebaserepo"
 )
 
 // A possiblePickups is a list of all of the potential drivers that can pick a
@@ -17,15 +21,22 @@ type possiblePickups struct {
 	networkRiderDistances map[string]float64
 }
 
-// matchRidersDrivers finds the shortest distances from a driver route to each
+// A DriverRoute is the sequential route a driver takes
+type DriverRoute struct {
+	DriverID string
+	Route    []maps.LatLng
+}
+
+// MatchRidersDrivers finds the shortest distances from a driver route to each
 // rider and then weighted randomizes the findings to return a list of matches
-func MatchRidersDrivers(riderPoints []riderStartEnd, driverPaths []driverRoute,
-	timesToRepeat int, randSeed int64) map[string]string {
+func MatchRidersDrivers(riderPoints []firebaserepo.Ride,
+	driverPaths []DriverRoute, timesToRepeat int,
+	randSeed int64) map[string]string {
 	var potentialPickups []possiblePickups
 
 	for _, riderCoord := range riderPoints {
 		riderPickups := possiblePickups {
-			riderID: riderCoord.riderID,
+			riderID: riderCoord.RiderID,
 			networkRiderDistances: map[string]float64{},
 		}
 		for _, driverPath := range driverPaths {
@@ -33,7 +44,7 @@ func MatchRidersDrivers(riderPoints []riderStartEnd, driverPaths []driverRoute,
 				driverPath, riderCoord)
 			if correctOrder {
 				riderPickups.networkRiderDistances[
-					driverPath.driverID] = distance
+					driverPath.DriverID] = distance
 			}
 		}
 		potentialPickups = append(potentialPickups, riderPickups)
@@ -46,16 +57,29 @@ func MatchRidersDrivers(riderPoints []riderStartEnd, driverPaths []driverRoute,
 // node on a drivers route to a rider's starting point and endpoints. Also
 // checks whether the directions for both participants match (ex. driver is
 // going from SF to LA, but rider is going from LA to SF)
-func riderDriverClosestDistances(driverPath driverRoute,
-	riderCoords riderStartEnd) (float64, bool) {
+func riderDriverClosestDistances(driverPath DriverRoute,
+	riderCoords firebaserepo.Ride) (float64, bool) {
 	shortestStartDistance, shortestEndDistance := math.MaxFloat64,
 		math.MaxFloat64
 	startIndex, endIndex := -1, -1
 
-	for index, driverNode := range driverPath.route {
+	for index, driverNode := range driverPath.Route {
 		startDistance := haversineDistance(
-			riderCoords.start, driverNode)
-		endDistance   := haversineDistance(riderCoords.end, driverNode)
+			// TO-DO Find a way to include the Ride struct without
+			// having to do type conversions
+			maps.LatLng{
+				Lat: riderCoords.PickupLocation.Latitude,
+				Lng: riderCoords.PickupLocation.Longitude,
+			},
+			driverNode,
+		)
+		endDistance := haversineDistance(
+			maps.LatLng{
+				Lat: riderCoords.DropoffLocation.Latitude,
+				Lng: riderCoords.DropoffLocation.Longitude,
+			},
+			driverNode,
+		)
 
 		if startDistance < shortestStartDistance {
 			shortestStartDistance = startDistance
@@ -79,9 +103,9 @@ func riderDriverClosestDistances(driverPath driverRoute,
 
 // haversineDistance finds the rounded Haversine distance in meters between two
 // coords
-func haversineDistance(coordA, coordB coord) float64 {
-	pointA := haversine.Point{Lat: coordA.lat, Lon: coordA.lng}
-	pointB := haversine.Point{Lat: coordB.lat, Lon: coordB.lng}
+func haversineDistance(coordA, coordB maps.LatLng) float64 {
+	pointA := haversine.Point{Lat: coordA.Lat, Lon: coordA.Lng}
+	pointB := haversine.Point{Lat: coordB.Lat, Lon: coordB.Lng}
 
 	return math.Round(float64(pointA.MetresTo(pointB)))
 }
@@ -94,10 +118,10 @@ func randomMatch(potentialPickups []possiblePickups,
 	matches := make(map[string]string)
 
 	for _, pickup := range potentialPickups {
-		driverID, matched := weightedInverseRandRider(
+		DriverID, matched := weightedInverseRandRider(
 			pickup, matches, randSeed)
 		if matched {
-			matches[driverID] = pickup.riderID
+			matches[DriverID] = pickup.riderID
 		}
 	}
 
@@ -113,12 +137,12 @@ func weightedInverseRandRider(pickupSet possiblePickups,
 	matchedDriverID                := ""
 	rand.Seed(randSeed)
 
-	for driverID, distance := range pickupSet.networkRiderDistances {
-		if _, matched := alreadyMatched[driverID]; !matched {
+	for DriverID, distance := range pickupSet.networkRiderDistances {
+		if _, matched := alreadyMatched[DriverID]; !matched {
 			inverseDistanceTotal += 1 / distance
 		} else {
 			// Clean up previous matches
-			delete(pickupSet.networkRiderDistances, driverID)
+			delete(pickupSet.networkRiderDistances, DriverID)
 		}
 	}
 
@@ -126,10 +150,10 @@ func weightedInverseRandRider(pickupSet possiblePickups,
 
 	// Adds each distance until the random target is reached (weighted
 	// random selection)
-	for driverID, distance := range pickupSet.networkRiderDistances {
+	for DriverID, distance := range pickupSet.networkRiderDistances {
 		totalNum += 1 / distance
 		if (totalNum >= targetNum) {
-			matchedDriverID = driverID
+			matchedDriverID = DriverID
 			break
 		}
 	}
