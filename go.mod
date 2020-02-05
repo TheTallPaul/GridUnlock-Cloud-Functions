@@ -6,7 +6,8 @@ require (
 	cloud.google.com/go v0.38.0
 	firebase.google.com/go v3.12.0+incompatible
 	github.com/google/uuid v1.1.1 // indirect
-	github.com/kr/pretty v0.2.0
+	github.com/kr/pretty v0.2.0 // indirect
+	github.com/sergi/go-diff v1.1.0 // indirect
 	github.com/speterson-zoll/go-haversine v0.0.0-20160308020054-b8b58e5a75f5 // indirect
 	golang.org/x/net v0.0.0-20200114155413-6afb5195e5aa
 	google.golang.org/api v0.15.0
