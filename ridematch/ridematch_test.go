@@ -27,21 +27,21 @@ var MatchRidersDriversTestCases = []struct {
 }{
 	{
 		[]firebaserepo.Ride{
-			firebaserepo.Ride{
+			{
 				RiderID: "rider1",
 				// New York
 				PickupLocation: &newYorkRider,
 				// Baltimore
 				DropoffLocation: &baltimoreRider,
 			},
-			firebaserepo.Ride{
+			{
 				RiderID: "rider2",
 				// Tacoma
 				PickupLocation: &tacomaRider,
 				// Portland
 				DropoffLocation: &portlandRider,
 			},
-			firebaserepo.Ride{
+			{
 				RiderID: "rider3",
 				// Omaha
 				PickupLocation: &omahaRider,
@@ -50,76 +50,76 @@ var MatchRidersDriversTestCases = []struct {
 			},
 		},
 		[]DriverRoute{
-			DriverRoute{
+			{
 				DriverID: "driver1",
 				Route: []maps.LatLng{
 					// Boston
-					maps.LatLng{
+					{
 						Lat: 42.3602534,
 						Lng: -71.0582912,
 					},
 					// Philadelphia
-					maps.LatLng{
+					{
 						Lat: 39.953346252441406,
 						Lng: -75.1633529663086,
 					},
 					// New York
-					maps.LatLng{
+					{
 						Lat: 40.7127281,
 						Lng: -74.0060152,
 					},
 					// Baltimore
-					maps.LatLng{
+					{
 						Lat: 39.2908816,
 						Lng: -76.610759,
 					},
 					// Washington
-					maps.LatLng{
+					{
 						Lat: 38.895530700683594,
 						Lng: -77.0319595336914,
 					},
 				},
 			},
-			DriverRoute{
+			{
 				DriverID: "driver2",
 				Route: []maps.LatLng{
 					// Seattle
-					maps.LatLng{
+					{
 						Lat: 47.6038321,
 						Lng: -122.3300624,
 					},
 					// Tacoma
-					maps.LatLng{
+					{
 						Lat: 47.2495798,
 						Lng: -122.4398746,
 					},
 					// Portland
-					maps.LatLng{
+					{
 						Lat: 45.5202471,
 						Lng: -122.6741949,
 					},
 					// Eugene
-					maps.LatLng{
+					{
 						Lat: 44.0505054,
 						Lng: -123.0950506,
 					},
 				},
 			},
-			DriverRoute{
+			{
 				DriverID: "driver3",
 				Route: []maps.LatLng{
 					// Sioux Falls
-					maps.LatLng{
+					{
 						Lat: 43.5472794,
 						Lng: -96.7294388,
 					},
 					// Omaha
-					maps.LatLng{
+					{
 						Lat: 41.2587459,
 						Lng: -95.9383758,
 					},
 					// Lincoln
-					maps.LatLng{
+					{
 						Lat: 40.8088861,
 						Lng: -96.7077751,
 					},
@@ -136,21 +136,21 @@ var MatchRidersDriversTestCases = []struct {
 	},
 	{
 		[]firebaserepo.Ride{
-			firebaserepo.Ride{
+			{
 				RiderID: "rider1",
 				// New York
 				PickupLocation: &newYorkRider,
 				// Baltimore
 				DropoffLocation: &baltimoreRider,
 			},
-			firebaserepo.Ride{
+			{
 				RiderID: "rider2",
 				// Tacoma
 				PickupLocation: &tacomaRider,
 				// Portland
 				DropoffLocation: &portlandRider,
 			},
-			firebaserepo.Ride{
+			{
 				RiderID: "rider3",
 				// Omaha
 				PickupLocation: &omahaRider,
@@ -159,56 +159,56 @@ var MatchRidersDriversTestCases = []struct {
 			},
 		},
 		[]DriverRoute{
-			DriverRoute{
+			{
 				DriverID: "driver1",
 				Route: []maps.LatLng{
 					// Boston
-					maps.LatLng{
+					{
 						Lat: 42.3602534,
 						Lng: -71.0582912,
 					},
 					// Philadelphia
-					maps.LatLng{
+					{
 						Lat: 39.953346252441406,
 						Lng: -75.1633529663086,
 					},
 					// New York
-					maps.LatLng{
+					{
 						Lat: 40.7127281,
 						Lng: -74.0060152,
 					},
 					// Baltimore
-					maps.LatLng{
+					{
 						Lat: 39.2908816,
 						Lng: -76.610759,
 					},
 					// Washington
-					maps.LatLng{
+					{
 						Lat: 38.895530700683594,
 						Lng: -77.0319595336914,
 					},
 				},
 			},
-			DriverRoute{
+			{
 				DriverID: "driver2",
 				Route: []maps.LatLng{
 					// Seattle
-					maps.LatLng{
+					{
 						Lat: 47.6038321,
 						Lng: -122.3300624,
 					},
 					// Tacoma
-					maps.LatLng{
+					{
 						Lat: 47.2495798,
 						Lng: -122.4398746,
 					},
 					// Portland
-					maps.LatLng{
+					{
 						Lat: 45.5202471,
 						Lng: -122.6741949,
 					},
 					// Eugene
-					maps.LatLng{
+					{
 						Lat: 44.0505054,
 						Lng: -123.0950506,
 					},
@@ -224,21 +224,21 @@ var MatchRidersDriversTestCases = []struct {
 	},
 	{
 		[]firebaserepo.Ride{
-			firebaserepo.Ride{
+			{
 				RiderID: "rider1",
 				// New York
 				PickupLocation: &newYorkRider,
 				// Baltimore
 				DropoffLocation: &baltimoreRider,
 			},
-			firebaserepo.Ride{
+			{
 				RiderID: "rider2",
 				// Tacoma
 				PickupLocation: &tacomaRider,
 				// Portland
 				DropoffLocation: &portlandRider,
 			},
-			firebaserepo.Ride{
+			{
 				RiderID: "rider3",
 				// Omaha
 				PickupLocation: &omahaRider,
@@ -282,7 +282,7 @@ var randomMatchTestCases = []struct {
 }{
 	{
 		[]possiblePickups{
-			possiblePickups{
+			{
 				riderID: "rider1",
 				networkRiderDistances: map[string]float64{
 					"driver1": 1.1,
@@ -290,7 +290,7 @@ var randomMatchTestCases = []struct {
 					"driver3": 43.0,
 				},
 			},
-			possiblePickups{
+			{
 				riderID: "rider2",
 				networkRiderDistances: map[string]float64{
 					"driver1": 430.1,
@@ -298,7 +298,7 @@ var randomMatchTestCases = []struct {
 					"driver3": 43.0,
 				},
 			},
-			possiblePickups{
+			{
 				riderID: "rider3",
 				networkRiderDistances: map[string]float64{
 					"driver1": 430.1,
@@ -316,19 +316,19 @@ var randomMatchTestCases = []struct {
 	},
 	{
 		[]possiblePickups{
-			possiblePickups{
+			{
 				riderID: "rider1",
 				networkRiderDistances: map[string]float64{
 					"driver1": 1.1,
 				},
 			},
-			possiblePickups{
+			{
 				riderID: "rider2",
 				networkRiderDistances: map[string]float64{
 					"driver1": 430.1,
 				},
 			},
-			possiblePickups{
+			{
 				riderID: "rider3",
 				networkRiderDistances: map[string]float64{
 					"driver1": 10.1,
@@ -344,11 +344,11 @@ var randomMatchTestCases = []struct {
 	},
 	{
 		[]possiblePickups{
-			possiblePickups{
+			{
 				riderID:               "rider1",
 				networkRiderDistances: map[string]float64{},
 			},
-			possiblePickups{
+			{
 				riderID:               "rider2",
 				networkRiderDistances: map[string]float64{},
 			},
@@ -385,27 +385,27 @@ var riderDriverClosestDistancesTestCases = []struct {
 			DriverID: "driver1",
 			Route: []maps.LatLng{
 				// Boston
-				maps.LatLng{
+				{
 					Lat: 42.3602534,
 					Lng: -71.0582912,
 				},
 				// Philadelphia
-				maps.LatLng{
+				{
 					Lat: 39.953346252441406,
 					Lng: -75.1633529663086,
 				},
 				// New York
-				maps.LatLng{
+				{
 					Lat: 40.7127281,
 					Lng: -74.0060152,
 				},
 				// Baltimore
-				maps.LatLng{
+				{
 					Lat: 39.2908816,
 					Lng: -76.610759,
 				},
 				// Washington
-				maps.LatLng{
+				{
 					Lat: 38.895530700683594,
 					Lng: -77.0319595336914,
 				},
@@ -426,27 +426,27 @@ var riderDriverClosestDistancesTestCases = []struct {
 			DriverID: "driver1",
 			Route: []maps.LatLng{
 				// Boston
-				maps.LatLng{
+				{
 					Lat: 42.3602534,
 					Lng: -71.0582912,
 				},
 				// Philadelphia
-				maps.LatLng{
+				{
 					Lat: 39.953346252441406,
 					Lng: -75.1633529663086,
 				},
 				// New York
-				maps.LatLng{
+				{
 					Lat: 40.7127281,
 					Lng: -74.0060152,
 				},
 				// Baltimore
-				maps.LatLng{
+				{
 					Lat: 39.2908816,
 					Lng: -76.610759,
 				},
 				// Washington
-				maps.LatLng{
+				{
 					Lat: 38.895530700683594,
 					Lng: -77.0319595336914,
 				},
@@ -467,17 +467,17 @@ var riderDriverClosestDistancesTestCases = []struct {
 			DriverID: "driver1",
 			Route: []maps.LatLng{
 				// Boston
-				maps.LatLng{
+				{
 					Lat: 42.3602534,
 					Lng: -71.0582912,
 				},
 				// Philadelphia
-				maps.LatLng{
+				{
 					Lat: 39.953346252441406,
 					Lng: -75.1633529663086,
 				},
 				// Washington
-				maps.LatLng{
+				{
 					Lat: 38.895530700683594,
 					Lng: -77.0319595336914,
 				},
@@ -498,17 +498,17 @@ var riderDriverClosestDistancesTestCases = []struct {
 			DriverID: "driver1",
 			Route: []maps.LatLng{
 				// Boston
-				maps.LatLng{
+				{
 					Lat: 42.3602534,
 					Lng: -71.0582912,
 				},
 				// Philadelphia
-				maps.LatLng{
+				{
 					Lat: 39.953346252441406,
 					Lng: -75.1633529663086,
 				},
 				// Washington
-				maps.LatLng{
+				{
 					Lat: 38.895530700683594,
 					Lng: -77.0319595336914,
 				},
@@ -529,7 +529,7 @@ var riderDriverClosestDistancesTestCases = []struct {
 			DriverID: "driver1",
 			Route: []maps.LatLng{
 				// Boston
-				maps.LatLng{
+				{
 					Lat: 42.3602534,
 					Lng: -71.0582912,
 				},
@@ -550,7 +550,7 @@ var riderDriverClosestDistancesTestCases = []struct {
 			DriverID: "driver1",
 			Route: []maps.LatLng{
 				// Boston
-				maps.LatLng{
+				{
 					Lat: 42.3602534,
 					Lng: -71.0582912,
 				},
