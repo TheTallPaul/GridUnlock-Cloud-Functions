@@ -2,17 +2,17 @@ package mapsrepo
 
 import (
 	"context"
-	"log"
 	"fmt"
+	"log"
 
-	"googlemaps.github.io/maps"
 	"google.golang.org/genproto/googleapis/type/latlng"
+	"googlemaps.github.io/maps"
 )
 
 // client is a Google Maps client, reused between function invocations.
 var client *maps.Client
 
-func init(){
+func init() {
 	var err error
 	client, err = maps.NewClient(maps.WithAPIKey(mapsAPIKey))
 	if err != nil {
@@ -36,8 +36,8 @@ func Route(origin, destination *latlng.LatLng) []maps.LatLng {
 
 	if len(route) < 1 {
 		log.Fatalf(
-			"Directions error: Can't find route between %v,%v " +
-			"and %v,%v",
+			"Directions error: Can't find route between %v,%v "+
+				"and %v,%v",
 			origin.Latitude,
 			origin.Longitude,
 			destination.Latitude,

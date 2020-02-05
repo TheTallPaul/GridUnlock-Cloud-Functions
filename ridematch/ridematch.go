@@ -5,6 +5,7 @@
 package ridematch
 
 import (
+	"log"
 	"math"
 	"math/rand"
 
@@ -28,28 +29,41 @@ type DriverRoute struct {
 }
 
 // MatchRidersDrivers finds the shortest distances from a driver route to each
-// rider and then weighted randomizes the findings to return a list of matches
+// rider and then weighted randomizes the findings to return a map of matches
+// taking the format of map[RiderID]: DriverID
 func MatchRidersDrivers(riderPoints []firebaserepo.Ride,
 	driverPaths []DriverRoute, timesToRepeat int,
 	randSeed int64) map[string]string {
 	var potentialPickups []possiblePickups
 
+	// TO-DO add checks for networks and driver detour distances
 	for _, riderCoord := range riderPoints {
-		riderPickups := possiblePickups {
-			riderID: riderCoord.RiderID,
-			networkRiderDistances: map[string]float64{},
-		}
-		for _, driverPath := range driverPaths {
-			distance, correctOrder := riderDriverClosestDistances(
-				driverPath, riderCoord)
-			if correctOrder {
-				riderPickups.networkRiderDistances[
-					driverPath.DriverID] = distance
+		if riderCoord.PickupLocation != nil &&
+			riderCoord.DropoffLocation != nil {
+			riderPickups := possiblePickups{
+				riderID:               riderCoord.RiderID,
+				networkRiderDistances: map[string]float64{},
 			}
+			for _, driverPath := range driverPaths {
+				distance, correctOrder :=
+					riderDriverClosestDistances(driverPath,
+						riderCoord)
+				if correctOrder {
+					id := driverPath.DriverID
+					riderPickups.
+						networkRiderDistances[id] =
+						distance
+				}
+			}
+			potentialPickups = append(potentialPickups,
+				riderPickups)
+		} else {
+			log.Printf("Received incomplete Ride document: %v",
+				riderCoord)
 		}
-		potentialPickups = append(potentialPickups, riderPickups)
 	}
 
+	// TO-DO repeat the matching timesToRepeat times to find optimal paths
 	return randomMatch(potentialPickups, randSeed)
 }
 
@@ -98,6 +112,7 @@ func riderDriverClosestDistances(driverPath DriverRoute,
 		correctOrder = false
 	}
 
+	//TO-DO call the API to get aproximate travel times
 	return shortestStartDistance + shortestEndDistance, correctOrder
 }
 
@@ -112,31 +127,35 @@ func haversineDistance(coordA, coordB maps.LatLng) float64 {
 
 // randomMatch performs a weighted random match selection on all riders, where
 // closer distances are weighted heavier than further distances and returns it
-// as a map of "DriverID": "RiderID"
+// as a map of "RiderID": "DriverID"
 func randomMatch(potentialPickups []possiblePickups,
 	randSeed int64) map[string]string {
 	matches := make(map[string]string)
+	driverMatched := make(map[string]bool)
 
 	for _, pickup := range potentialPickups {
 		DriverID, matched := weightedInverseRandRider(
-			pickup, matches, randSeed)
+			pickup, driverMatched, randSeed)
 		if matched {
-			matches[DriverID] = pickup.riderID
+			matches[pickup.riderID] = DriverID
+			driverMatched[DriverID] = true
+			log.Printf("Matching driver %v with rider %v", DriverID,
+				pickup.riderID)
 		}
 	}
 
 	return matches
 }
 
-
 // weightedInverseRandRider matches a rider to one of their possible drivers
 // using inverse random weighting and returns the matching driver ID
 func weightedInverseRandRider(pickupSet possiblePickups,
-	alreadyMatched map[string]string, randSeed int64) (string, bool) {
+	alreadyMatched map[string]bool, randSeed int64) (string, bool) {
 	inverseDistanceTotal, totalNum := 0.0, 0.0
-	matchedDriverID                := ""
+	matchedDriverID := ""
 	rand.Seed(randSeed)
 
+	// Find total distance of unmatched drivers to the rider
 	for DriverID, distance := range pickupSet.networkRiderDistances {
 		if _, matched := alreadyMatched[DriverID]; !matched {
 			inverseDistanceTotal += 1 / distance
@@ -152,7 +171,7 @@ func weightedInverseRandRider(pickupSet possiblePickups,
 	// random selection)
 	for DriverID, distance := range pickupSet.networkRiderDistances {
 		totalNum += 1 / distance
-		if (totalNum >= targetNum) {
+		if totalNum >= targetNum {
 			matchedDriverID = DriverID
 			break
 		}

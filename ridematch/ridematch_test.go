@@ -1,22 +1,22 @@
 package ridematch
 
 import (
-	"testing"
 	"reflect"
+	"testing"
 
-	"googlemaps.github.io/maps"
 	"google.golang.org/genproto/googleapis/type/latlng"
+	"googlemaps.github.io/maps"
 
 	"gridunlockridematch/internal/firebaserepo"
 )
 
-var bostonRider    = latlng.LatLng{Latitude: 42.4, Longitude: -71.1}
-var newYorkRider   = latlng.LatLng{Latitude: 40.7, Longitude: -74.0}
+var bostonRider = latlng.LatLng{Latitude: 42.4, Longitude: -71.1}
+var newYorkRider = latlng.LatLng{Latitude: 40.7, Longitude: -74.0}
 var baltimoreRider = latlng.LatLng{Latitude: 39.3, Longitude: -76.6}
-var tacomaRider    = latlng.LatLng{Latitude: 47.2, Longitude: -122.4}
-var portlandRider  = latlng.LatLng{Latitude: 45.5, Longitude: -122.6}
-var omahaRider     = latlng.LatLng{Latitude: 41.3, Longitude: -95.9}
-var lincolnRider   = latlng.LatLng{Latitude: 40.8, Longitude: -96.7}
+var tacomaRider = latlng.LatLng{Latitude: 47.2, Longitude: -122.4}
+var portlandRider = latlng.LatLng{Latitude: 45.5, Longitude: -122.6}
+var omahaRider = latlng.LatLng{Latitude: 41.3, Longitude: -95.9}
+var lincolnRider = latlng.LatLng{Latitude: 40.8, Longitude: -96.7}
 
 var MatchRidersDriversTestCases = []struct {
 	riderPoints     []firebaserepo.Ride
@@ -27,30 +27,30 @@ var MatchRidersDriversTestCases = []struct {
 }{
 	{
 		[]firebaserepo.Ride{
-			firebaserepo.Ride {
+			firebaserepo.Ride{
 				RiderID: "rider1",
 				// New York
 				PickupLocation: &newYorkRider,
 				// Baltimore
 				DropoffLocation: &baltimoreRider,
 			},
-			firebaserepo.Ride {
+			firebaserepo.Ride{
 				RiderID: "rider2",
 				// Tacoma
 				PickupLocation: &tacomaRider,
 				// Portland
 				DropoffLocation: &portlandRider,
 			},
-			firebaserepo.Ride {
+			firebaserepo.Ride{
 				RiderID: "rider3",
 				// Omaha
 				PickupLocation: &omahaRider,
 				// Lincoln
-				DropoffLocation:&lincolnRider,
+				DropoffLocation: &lincolnRider,
 			},
 		},
 		[]DriverRoute{
-			DriverRoute {
+			DriverRoute{
 				DriverID: "driver1",
 				Route: []maps.LatLng{
 					// Boston
@@ -80,7 +80,7 @@ var MatchRidersDriversTestCases = []struct {
 					},
 				},
 			},
-			DriverRoute {
+			DriverRoute{
 				DriverID: "driver2",
 				Route: []maps.LatLng{
 					// Seattle
@@ -105,7 +105,7 @@ var MatchRidersDriversTestCases = []struct {
 					},
 				},
 			},
-			DriverRoute {
+			DriverRoute{
 				DriverID: "driver3",
 				Route: []maps.LatLng{
 					// Sioux Falls
@@ -125,33 +125,32 @@ var MatchRidersDriversTestCases = []struct {
 					},
 				},
 			},
-
 		},
 		1,
 		1,
 		map[string]string{
-			"driver1": "rider1",
-			"driver2": "rider2",
-			"driver3": "rider3",
+			"rider1": "driver1",
+			"rider2": "driver2",
+			"rider3": "driver3",
 		},
 	},
 	{
 		[]firebaserepo.Ride{
-			firebaserepo.Ride {
+			firebaserepo.Ride{
 				RiderID: "rider1",
 				// New York
 				PickupLocation: &newYorkRider,
 				// Baltimore
 				DropoffLocation: &baltimoreRider,
 			},
-			firebaserepo.Ride {
+			firebaserepo.Ride{
 				RiderID: "rider2",
 				// Tacoma
 				PickupLocation: &tacomaRider,
 				// Portland
 				DropoffLocation: &portlandRider,
 			},
-			firebaserepo.Ride {
+			firebaserepo.Ride{
 				RiderID: "rider3",
 				// Omaha
 				PickupLocation: &omahaRider,
@@ -160,7 +159,7 @@ var MatchRidersDriversTestCases = []struct {
 			},
 		},
 		[]DriverRoute{
-			DriverRoute {
+			DriverRoute{
 				DriverID: "driver1",
 				Route: []maps.LatLng{
 					// Boston
@@ -190,7 +189,7 @@ var MatchRidersDriversTestCases = []struct {
 					},
 				},
 			},
-			DriverRoute {
+			DriverRoute{
 				DriverID: "driver2",
 				Route: []maps.LatLng{
 					// Seattle
@@ -219,27 +218,27 @@ var MatchRidersDriversTestCases = []struct {
 		1,
 		1,
 		map[string]string{
-			"driver1": "rider1",
-			"driver2": "rider2",
+			"rider1": "driver1",
+			"rider2": "driver2",
 		},
 	},
 	{
 		[]firebaserepo.Ride{
-			firebaserepo.Ride {
+			firebaserepo.Ride{
 				RiderID: "rider1",
 				// New York
 				PickupLocation: &newYorkRider,
 				// Baltimore
 				DropoffLocation: &baltimoreRider,
 			},
-			firebaserepo.Ride {
+			firebaserepo.Ride{
 				RiderID: "rider2",
 				// Tacoma
 				PickupLocation: &tacomaRider,
 				// Portland
 				DropoffLocation: &portlandRider,
 			},
-			firebaserepo.Ride {
+			firebaserepo.Ride{
 				RiderID: "rider3",
 				// Omaha
 				PickupLocation: &omahaRider,
@@ -265,8 +264,8 @@ func TestMatchRidersDrivers(t *testing.T) {
 
 		if !reflect.DeepEqual(input.expectedMatches, matches) {
 			t.Errorf(
-				"FAIL: Want matches from riders %v and " +
-				" drivers %v to be: %v but we got %v",
+				"FAIL: Want matches from riders %v and "+
+					"drivers %v to be: %v but we got %v",
 				input.riderPoints,
 				input.driverPaths,
 				input.expectedMatches,
@@ -285,7 +284,7 @@ var randomMatchTestCases = []struct {
 		[]possiblePickups{
 			possiblePickups{
 				riderID: "rider1",
-				networkRiderDistances: map[string]float64 {
+				networkRiderDistances: map[string]float64{
 					"driver1": 1.1,
 					"driver2": 304.0,
 					"driver3": 43.0,
@@ -293,7 +292,7 @@ var randomMatchTestCases = []struct {
 			},
 			possiblePickups{
 				riderID: "rider2",
-				networkRiderDistances: map[string]float64 {
+				networkRiderDistances: map[string]float64{
 					"driver1": 430.1,
 					"driver2": 3.0,
 					"driver3": 43.0,
@@ -301,7 +300,7 @@ var randomMatchTestCases = []struct {
 			},
 			possiblePickups{
 				riderID: "rider3",
-				networkRiderDistances: map[string]float64 {
+				networkRiderDistances: map[string]float64{
 					"driver1": 430.1,
 					"driver2": 33.0,
 					"driver3": 1.0,
@@ -310,28 +309,28 @@ var randomMatchTestCases = []struct {
 		},
 		1,
 		map[string]string{
-			"driver1": "rider1",
-			"driver2": "rider2",
-			"driver3": "rider3",
+			"rider1": "driver1",
+			"rider2": "driver2",
+			"rider3": "driver3",
 		},
 	},
 	{
 		[]possiblePickups{
 			possiblePickups{
 				riderID: "rider1",
-				networkRiderDistances: map[string]float64 {
+				networkRiderDistances: map[string]float64{
 					"driver1": 1.1,
 				},
 			},
 			possiblePickups{
 				riderID: "rider2",
-				networkRiderDistances: map[string]float64 {
+				networkRiderDistances: map[string]float64{
 					"driver1": 430.1,
 				},
 			},
 			possiblePickups{
 				riderID: "rider3",
-				networkRiderDistances: map[string]float64 {
+				networkRiderDistances: map[string]float64{
 					"driver1": 10.1,
 					"driver3": 430.1,
 				},
@@ -339,25 +338,24 @@ var randomMatchTestCases = []struct {
 		},
 		1,
 		map[string]string{
-			"driver1": "rider1",
-			"driver3": "rider3",
+			"rider1": "driver1",
+			"rider3": "driver3",
 		},
 	},
 	{
 		[]possiblePickups{
 			possiblePickups{
-				riderID: "rider1",
-				networkRiderDistances: map[string]float64 {},
+				riderID:               "rider1",
+				networkRiderDistances: map[string]float64{},
 			},
 			possiblePickups{
-				riderID: "rider2",
-				networkRiderDistances: map[string]float64 {},
+				riderID:               "rider2",
+				networkRiderDistances: map[string]float64{},
 			},
 		},
 		1,
 		map[string]string{},
 	},
-
 }
 
 func TestRandomMatch(t *testing.T) {
@@ -366,8 +364,8 @@ func TestRandomMatch(t *testing.T) {
 
 		if !reflect.DeepEqual(input.expectedMatches, matches) {
 			t.Errorf(
-				"FAIL: Want matches from %v to be: %v but we " +
-				"got %v",
+				"FAIL: Want matches from %v to be: %v but we "+
+					"got %v",
 				input.potentialPickups,
 				input.expectedMatches,
 				matches,
@@ -383,7 +381,7 @@ var riderDriverClosestDistancesTestCases = []struct {
 	expectedOrder    bool
 }{
 	{
-		DriverRoute {
+		DriverRoute{
 			DriverID: "driver1",
 			Route: []maps.LatLng{
 				// Boston
@@ -413,7 +411,7 @@ var riderDriverClosestDistancesTestCases = []struct {
 				},
 			},
 		},
-		firebaserepo.Ride {
+		firebaserepo.Ride{
 			RiderID: "rider1",
 			// New York
 			PickupLocation: &newYorkRider,
@@ -424,7 +422,7 @@ var riderDriverClosestDistancesTestCases = []struct {
 		true,
 	},
 	{
-		DriverRoute {
+		DriverRoute{
 			DriverID: "driver1",
 			Route: []maps.LatLng{
 				// Boston
@@ -454,7 +452,7 @@ var riderDriverClosestDistancesTestCases = []struct {
 				},
 			},
 		},
-		firebaserepo.Ride {
+		firebaserepo.Ride{
 			RiderID: "rider1",
 			// Baltimore
 			PickupLocation: &baltimoreRider,
@@ -465,7 +463,7 @@ var riderDriverClosestDistancesTestCases = []struct {
 		false,
 	},
 	{
-		DriverRoute {
+		DriverRoute{
 			DriverID: "driver1",
 			Route: []maps.LatLng{
 				// Boston
@@ -485,7 +483,7 @@ var riderDriverClosestDistancesTestCases = []struct {
 				},
 			},
 		},
-		firebaserepo.Ride {
+		firebaserepo.Ride{
 			RiderID: "rider1",
 			// New York
 			PickupLocation: &newYorkRider,
@@ -496,7 +494,7 @@ var riderDriverClosestDistancesTestCases = []struct {
 		true,
 	},
 	{
-		DriverRoute {
+		DriverRoute{
 			DriverID: "driver1",
 			Route: []maps.LatLng{
 				// Boston
@@ -516,7 +514,7 @@ var riderDriverClosestDistancesTestCases = []struct {
 				},
 			},
 		},
-		firebaserepo.Ride {
+		firebaserepo.Ride{
 			RiderID: "rider1",
 			// Baltimore
 			PickupLocation: &baltimoreRider,
@@ -527,7 +525,7 @@ var riderDriverClosestDistancesTestCases = []struct {
 		false,
 	},
 	{
-		DriverRoute {
+		DriverRoute{
 			DriverID: "driver1",
 			Route: []maps.LatLng{
 				// Boston
@@ -537,7 +535,7 @@ var riderDriverClosestDistancesTestCases = []struct {
 				},
 			},
 		},
-		firebaserepo.Ride {
+		firebaserepo.Ride{
 			RiderID: "rider1",
 			// New York
 			PickupLocation: &newYorkRider,
@@ -548,9 +546,9 @@ var riderDriverClosestDistancesTestCases = []struct {
 		true,
 	},
 	{
-		DriverRoute {
+		DriverRoute{
 			DriverID: "driver1",
-			Route:	[]maps.LatLng{
+			Route: []maps.LatLng{
 				// Boston
 				maps.LatLng{
 					Lat: 42.3602534,
@@ -558,7 +556,7 @@ var riderDriverClosestDistancesTestCases = []struct {
 				},
 			},
 		},
-		firebaserepo.Ride {
+		firebaserepo.Ride{
 			RiderID: "rider1",
 			// Boston
 			PickupLocation: &bostonRider,
@@ -568,7 +566,6 @@ var riderDriverClosestDistancesTestCases = []struct {
 		11184,
 		true,
 	},
-
 }
 
 func TestRiderDriverClosestDistances(t *testing.T) {
@@ -578,8 +575,9 @@ func TestRiderDriverClosestDistances(t *testing.T) {
 
 		if input.expectedDistance != distance {
 			t.Errorf(
-				"FAIL: Want closest total distance for Route " +
-				"%v picking up %v to be: %v but we got %v",
+				"FAIL: Want closest total distance for Route "+
+					"%v picking up %v to be: %v but we "+
+					"got %v",
 				input.DriverRoute,
 				input.riderRoute,
 				input.expectedDistance,
@@ -589,8 +587,8 @@ func TestRiderDriverClosestDistances(t *testing.T) {
 
 		if input.expectedOrder != order {
 			t.Errorf(
-				"FAIL: Want correct ordering for Route %v " +
-				"picking up %v to be: %v but we got %v",
+				"FAIL: Want correct ordering for Route %v "+
+					"picking up %v to be: %v but we got %v",
 				input.DriverRoute,
 				input.riderRoute,
 				input.expectedOrder,
@@ -623,8 +621,8 @@ func TestHaversineDistance(t *testing.T) {
 
 		if input.expectedMeters != meters {
 			t.Errorf(
-				"FAIL: Want distance from %v to %v to be: %v " +
-				"but we got %v",
+				"FAIL: Want distance from %v to %v to be: %v "+
+					"but we got %v",
 				input.coordA,
 				input.coordB,
 				input.expectedMeters,
@@ -636,7 +634,7 @@ func TestHaversineDistance(t *testing.T) {
 
 var weightedInverseRandRiderTestCases = []struct {
 	pickupSet   possiblePickups
-	prevMatches map[string]string
+	prevMatches map[string]bool
 	randSeed    int64
 	expectedID  string
 	expectedOK  bool
@@ -644,12 +642,12 @@ var weightedInverseRandRiderTestCases = []struct {
 	{
 		possiblePickups{
 			riderID: "rider1",
-			networkRiderDistances: map[string]float64 {
+			networkRiderDistances: map[string]float64{
 				"driver1": 1.0,
 				"driver2": 100.0,
 			},
 		},
-		map[string]string {},
+		map[string]bool{},
 		1,
 		"driver1",
 		true,
@@ -657,13 +655,13 @@ var weightedInverseRandRiderTestCases = []struct {
 	{
 		possiblePickups{
 			riderID: "rider1",
-			networkRiderDistances: map[string]float64 {
+			networkRiderDistances: map[string]float64{
 				"driver1": 430.1,
 				"driver2": 3.0,
 				"driver3": 43.0,
 			},
 		},
-		map[string]string {},
+		map[string]bool{},
 		1,
 		"driver2",
 		true,
@@ -671,13 +669,13 @@ var weightedInverseRandRiderTestCases = []struct {
 	{
 		possiblePickups{
 			riderID: "rider1",
-			networkRiderDistances: map[string]float64 {
+			networkRiderDistances: map[string]float64{
 				"driver1": 430.1,
 				"driver2": 3.0,
 				"driver3": 43.0,
 			},
 		},
-		map[string]string {"driver2": "rider2"},
+		map[string]bool{"driver2": true},
 		1,
 		"driver3",
 		true,
@@ -685,16 +683,16 @@ var weightedInverseRandRiderTestCases = []struct {
 	{
 		possiblePickups{
 			riderID: "rider1",
-			networkRiderDistances: map[string]float64 {
+			networkRiderDistances: map[string]float64{
 				"driver1": 430.1,
 				"driver2": 3.0,
 				"driver3": 43.0,
 			},
 		},
-		map[string]string {
-			"driver1": "rider2",
-			"driver2": "rider3",
-			"driver3": "rider4",
+		map[string]bool{
+			"driver1": true,
+			"driver2": true,
+			"driver3": true,
 		},
 		1,
 		"",
@@ -702,16 +700,15 @@ var weightedInverseRandRiderTestCases = []struct {
 	},
 	{
 		possiblePickups{
-			riderID: "rider1",
-			networkRiderDistances: map[string]float64 {},
+			riderID:               "rider1",
+			networkRiderDistances: map[string]float64{},
 		},
-		map[string]string {},
+		map[string]bool{},
 		1,
 		"",
 		false,
 	},
 }
-
 
 func TestWeightedInverseRandRider(t *testing.T) {
 	for _, input := range weightedInverseRandRiderTestCases {
@@ -723,8 +720,8 @@ func TestWeightedInverseRandRider(t *testing.T) {
 
 		if input.expectedID != DriverID || input.expectedOK != matched {
 			t.Errorf(
-				"FAIL: Want match to be: (%v, %v) but we got " +
-				"(%v, %v)",
+				"FAIL: Want match to be: (%v, %v) but we got "+
+					"(%v, %v)",
 				input.expectedID,
 				input.expectedOK,
 				DriverID,

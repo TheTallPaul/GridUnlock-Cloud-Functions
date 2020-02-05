@@ -21,7 +21,8 @@ import (
 func findRoute(drives []firebaserepo.Drive, ch chan ridematch.DriverRoute) {
 	for _, drive := range drives {
 		ch <- ridematch.DriverRoute{
-			Route: mapsrepo.Route(drive.Origin, drive.Destination),
+			Route: mapsrepo.Route(drive.Origin,
+				drive.Destination),
 			DriverID: drive.DriverID,
 		}
 	}
@@ -30,60 +31,67 @@ func findRoute(drives []firebaserepo.Drive, ch chan ridematch.DriverRoute) {
 
 // Matchmake queries the database for available rides, matches riders to
 // drivers, and updates the database accordingly
-func Matchmake(){
+func Matchmake() {
 	// Collect rides from collection
 	rides := make([]firebaserepo.Ride, 0)
 	firebaserepo.FetchCollection(
 		context.Background(),
 		"rides",
-		func(doc *firestore.DocumentSnapshot){
+		func(doc *firestore.DocumentSnapshot) {
 			var ride firebaserepo.Ride
 			if err := doc.DataTo(&ride); err != nil {
-		                log.Fatalf(
-		                	"Failed to convert ride json data to " +
-		                	"struct: %v",
-		                	err,
-		               	)
-			} else {
-		        	rides = append(rides, ride)
-		        }
+				log.Fatalf(
+					"Failed to convert ride json data to "+
+						"struct: %v",
+					err,
+				)
+			} else if ride.Active {
+				ride.ID = doc.Ref.ID
+				rides = append(rides, ride)
+			}
 		},
 	)
+	log.Println("Collected rides:", rides)
 
 	// Collect drives from collection
 	drives := make([]firebaserepo.Drive, 0)
 	firebaserepo.FetchCollection(
 		context.Background(),
 		"drives",
-		func(doc *firestore.DocumentSnapshot){
+		// TO-DO move findRoute() into the loop to optimize API calls
+		func(doc *firestore.DocumentSnapshot) {
 			var drive firebaserepo.Drive
 			if err := doc.DataTo(&drive); err != nil {
-		                log.Fatalf(
-		                	"Failed to convert drive json data " +
-		                	"to struct: %v",
-		                	err,
-		               	)
+				log.Fatalf(
+					"Failed to convert drive json data "+
+						"to struct: %v",
+					err,
+				)
 			} else {
-		        	drives = append(drives, drive)
-		        }
+				drive.ID = doc.Ref.ID
+				drives = append(drives, drive)
+			}
 		},
 	)
+	log.Println("Collected drives:", drives)
 
 	// Find the driver routes
 	ch := make(chan ridematch.DriverRoute)
 	go findRoute(drives, ch)
 	var driverRoutes []ridematch.DriverRoute
-	for route := range(ch) {
+	for route := range ch {
 		driverRoutes = append(driverRoutes, route)
 	}
+	log.Println("Found driver routes:", driverRoutes)
 
 	// Match riders to drivers
-	result := ridematch.MatchRidersDrivers(
+	matches := ridematch.MatchRidersDrivers(
 		rides,
 		driverRoutes,
 		1,
 		time.Now().UnixNano(),
 	)
+	log.Println("Matched riders with drivers:", matches)
 
-	log.Println("Matched riders with drivers: ", result)
+	firebaserepo.UpdateMatches(context.Background(), rides, matches)
 }
