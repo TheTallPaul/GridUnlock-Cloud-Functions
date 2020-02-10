@@ -1,11 +1,11 @@
-module gridunlockridematch
+module cascadeoctober.com/gridunlockridematch
 
 go 1.13
 
 require (
 	cloud.google.com/go/firestore v1.1.1
 	firebase.google.com/go v3.12.0+incompatible
-	github.com/google/uuid v1.1.1 // indirect
+	github.com/GoogleCloudPlatform/functions-framework-go v1.0.0
 	github.com/sergi/go-diff v1.1.0 // indirect
 	github.com/speterson-zoll/go-haversine v0.0.0-20160308020054-b8b58e5a75f5 // indirect
 	golang.org/x/net v0.0.0-20200202094626-16171245cfb2

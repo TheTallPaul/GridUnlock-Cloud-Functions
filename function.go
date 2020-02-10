@@ -5,15 +5,16 @@
 package gridunlockridematch
 
 import (
-	"gridunlockridematch/internal/firebaserepo"
-	"gridunlockridematch/internal/mapsrepo"
-	"gridunlockridematch/ridematch"
+	"cascadeoctober.com/gridunlockridematch/internal/firebaserepo"
+	"cascadeoctober.com/gridunlockridematch/internal/mapsrepo"
+	"cascadeoctober.com/gridunlockridematch/ridematch"
 
 	"cloud.google.com/go/firestore"
 	"golang.org/x/net/context"
 
 	"log"
 	"time"
+	"net/http"
 )
 
 // findRoute is a go routine that makes API calls to the map repo and returns
@@ -31,11 +32,13 @@ func findRoute(drives []firebaserepo.Drive, ch chan ridematch.DriverRoute) {
 
 // Matchmake queries the database for available rides, matches riders to
 // drivers, and updates the database accordingly
-func Matchmake() {
+func Matchmake(writer http.ResponseWriter, request *http.Request) {
+	ctx := context.Background()
+
 	// Collect rides from collection
 	rides := make([]firebaserepo.Ride, 0)
 	firebaserepo.FetchCollection(
-		context.Background(),
+		ctx,
 		"rides",
 		func(doc *firestore.DocumentSnapshot) {
 			var ride firebaserepo.Ride
@@ -56,7 +59,7 @@ func Matchmake() {
 	// Collect drives from collection
 	drives := make([]firebaserepo.Drive, 0)
 	firebaserepo.FetchCollection(
-		context.Background(),
+		ctx,
 		"drives",
 		// TO-DO move findRoute() into the loop to optimize API calls
 		func(doc *firestore.DocumentSnapshot) {
@@ -93,5 +96,5 @@ func Matchmake() {
 	)
 	log.Println("Matched riders with drivers:", matches)
 
-	firebaserepo.UpdateMatches(context.Background(), rides, matches)
+	firebaserepo.UpdateMatches(ctx, rides, matches)
 }

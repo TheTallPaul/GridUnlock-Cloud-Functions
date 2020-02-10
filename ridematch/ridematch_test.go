@@ -7,7 +7,7 @@ import (
 	"google.golang.org/genproto/googleapis/type/latlng"
 	"googlemaps.github.io/maps"
 
-	"gridunlockridematch/internal/firebaserepo"
+	"cascadeoctober.com/gridunlockridematch/internal/firebaserepo"
 )
 
 var bostonRider = latlng.LatLng{Latitude: 42.4, Longitude: -71.1}

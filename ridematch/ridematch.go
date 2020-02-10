@@ -12,7 +12,7 @@ import (
 	"googlemaps.github.io/maps"
 	"pault.ag/go/haversine"
 
-	"gridunlockridematch/internal/firebaserepo"
+	"cascadeoctober.com/gridunlockridematch/internal/firebaserepo"
 )
 
 // A possiblePickups is a list of all of the potential drivers that can pick a
