@@ -4,8 +4,8 @@ import (
 	"log"
 	"os"
 
-	"github.com/GoogleCloudPlatform/functions-framework-go/funcframework"
 	"cascadeoctober.com/gridunlockridematch"
+	"github.com/GoogleCloudPlatform/functions-framework-go/funcframework"
 )
 
 func main() {

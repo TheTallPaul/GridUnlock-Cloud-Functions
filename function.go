@@ -13,8 +13,8 @@ import (
 	"golang.org/x/net/context"
 
 	"log"
-	"time"
 	"net/http"
+	"time"
 )
 
 // findRoute is a go routine that makes API calls to the map repo and returns
